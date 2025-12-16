@@ -1,0 +1,20 @@
+{
+  "name": "Pläner — недельный планировщик",
+  "short_name": "Pläner",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#fbe1ec",
+  "theme_color": "#f5a3c7",
+  "icons": [
+    {
+      "src": "planer.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "planer.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

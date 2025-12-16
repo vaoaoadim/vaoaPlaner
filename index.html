@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pläner — недельный планировщик</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  
+  <link rel="stylesheet" href="style.css" />
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" sizes="32x32" href="planer.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="planer.png">
+  <link rel="apple-touch-icon" href="planer.png">
+  
+  <meta name="theme-color" content="#f5a3c7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Pläner">
+
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "recharts": "https://esm.sh/recharts@^3.6.0"
+  }
+}
+</script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1>Плäнер✍️</h1>
+      <div class="week-controls">
+        <input type="date" id="weekStart" />
+      </div>
+    </div>
+    <div class="header-right">
+      <button id="btnWeeklyAnalytics" class="header-btn" title="Weekly Analytics">📊</button>
+      <button id="btnThemeToggle" class="header-btn" title="Dark Mode">🌗</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="week" class="week"></section>
+
+    <div class="bottom-controls">
+      <button id="toggleHabits" class="toggle-button btn-habits">Привычки 🏆</button>
+      <button id="toggleAnalytics" class="toggle-button btn-stats">Статистика 📈</button>
+      <button id="toggleCalendar" class="toggle-button btn-calendar">Календарь 📆</button>
+    </div>
+    
+    <div id="analytics-container" class="panel-container analytics">
+      <div class="panel-content">
+        <button class="close-panel">✕</button>
+        <canvas id="barChart"></canvas>
+        <canvas id="pieChart"></canvas>
+        <div class="summary" id="summary"></div>
+      </div>
+    </div>
+
+    <div id="habits-container" class="panel-container habits">
+      <div class="panel-content">
+        <button class="close-panel">✕</button>
+        <h2>Трекер привычек</h2>
+        <div id="habits-list"></div>
+        <button id="addHabitBtn" class="add-habit-btn">+ Добавить привычку</button>
+      </div>
+    </div>
+
+    <div id="calendar-container" class="panel-container calendar">
+      <div class="panel-content">
+        <button class="close-panel">✕</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; max-width: 800px; margin-left: auto; margin-right: auto;">
+            <h2 id="calendar-month-title">Календарь</h2>
+        </div>
+        <div id="calendar-grid" class="calendar-grid"></div>
+      </div>
+    </div>
+
+    <div id="history-container" class="panel-container history">
+      <div class="panel-content">
+        <button class="close-panel">✕</button>
+        <h2>Архив недель</h2>
+        <div id="history-list"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Instruction Modal -->
+  <div id="instruction-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h2>Welcome to Pläner! 👋</h2>
+      <ol>
+        <li>Select the date in the upper left corner of the window from which the countdown of your first week in the planner will begin.</li>
+        <li>Set tasks, track sleep and so on, and at the end of each week receive overall analytics.</li>
+        <li>Build habits and mark their completion.</li>
+        <li>Keep a calendar by recording important events and meetings.</li>
+        <li>Monitor the overall summary statistics of your reporting week.</li>
+      </ol>
+      <p style="text-align: center; font-weight: bold; margin-top: 15px;">Good luck!</p>
+      <button id="close-instruction-btn">Let's go 🚀</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
