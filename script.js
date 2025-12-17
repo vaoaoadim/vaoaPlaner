@@ -29,7 +29,7 @@ const DAYS = ["Понедельник", "Вторник", "Среда", "Чет�
 const SHORT_DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 const ENERGY = ["⚡", "⚡⚡", "⚡⚡⚡", "⚡⚡⚡⚡"];
 const MOOD = ["🙂", "😐", "😡", "😞"];
-const MOOD_SCORES = { "🙂": 4, "😐": 3, "😴": 2, "😞": 1 };
+const MOOD_SCORES = { "🙂": 4, "😐": 3, "😡": 2, "😞": 1 };
 
 // State initialization
 let state = JSON.parse(localStorage.getItem("planer")) || {};
@@ -647,4 +647,5 @@ closeInstructionBtn.onclick = () => {
   instructionModal.classList.add("hidden");
   localStorage.setItem("planer_instructions_seen", "true");
 };
+
 
