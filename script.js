@@ -28,7 +28,7 @@ const bottomControls = document.querySelector(".bottom-controls");
 const DAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
 const SHORT_DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 const ENERGY = ["⚡", "⚡⚡", "⚡⚡⚡", "⚡⚡⚡⚡"];
-const MOOD = ["🙂", "😐", "😴", "😞"];
+const MOOD = ["🙂", "😐", "😡", "😞"];
 const MOOD_SCORES = { "🙂": 4, "😐": 3, "😴": 2, "😞": 1 };
 
 // State initialization
@@ -647,3 +647,4 @@ closeInstructionBtn.onclick = () => {
   instructionModal.classList.add("hidden");
   localStorage.setItem("planer_instructions_seen", "true");
 };
+
