@@ -564,7 +564,7 @@ function renderHistory() {
     if (avgMoodScore > 0) {
       if (avgMoodScore >= 3.5) avgMoodEmoji = "🙂";
       else if (avgMoodScore >= 2.5) avgMoodEmoji = "😐";
-      else if (avgMoodScore >= 1.5) avgMoodEmoji = "😴";
+      else if (avgMoodScore >= 1.5) avgMoodEmoji = "😡";
       else avgMoodEmoji = "😞";
     }
 
@@ -647,5 +647,6 @@ closeInstructionBtn.onclick = () => {
   instructionModal.classList.add("hidden");
   localStorage.setItem("planer_instructions_seen", "true");
 };
+
 
 
