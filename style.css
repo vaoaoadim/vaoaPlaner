@@ -19,16 +19,16 @@
   --footer-height: 320px; /* Increased footer height for larger panels */
 }
 
-/* DARK THEME VARIABLES */
+/* DARK THEME VARIABLES (White, Dark Blue, Purple) */
 body.dark-theme {
-  --beige: #0d1b2a;       /* Dark Navy background */
-  --pink: #3d5a80;        /* Muted Blue highlight */
-  --pink-soft: #1b263b;   /* Darker background for cards */
-  --blue: #00b4d8;        /* Bright Cyan accent */
-  --blue-strong: #90e0ef; /* Light text accent */
-  --green: #2a9d8f;       /* Teal */
-  --text: #e0e1dd;        /* Light text */
-  --border: #e0e1dd;      /* Light border */
+  --beige: #0a0e17;       /* Very Deep Dark Blue background */
+  --pink: #561365;        /* Primary: Deep Purple (Replaces Pink) */
+  --pink-soft: #240046;   /* Secondary: Darker Purple/Indigo (Replaces Soft Pink cards) */
+  --blue: #00b4d8;        /* Cyan/Blue accent */
+  --blue-strong: #e0aaff; /* Light Lilac text accent */
+  --green: #48cae4;       /* Cyan-Blue (Replaces Green) */
+  --text: #ffffff;        /* White text */
+  --border: #ffffff;      /* White border */
   --shadow: 3px 3px 0px #000;
   --inset-shadow: inset 2px 2px 0px rgba(0,0,0,0.5);
 }
@@ -80,10 +80,12 @@ body.dark-theme {
       transparent 1px,
       transparent 2px
     ),
+    /* Requested Gradient: Green, Purple, Cyan */
     linear-gradient(
       120deg, 
-      rgba(13, 27, 42, 0.95) 0%, 
-      rgba(27, 38, 59, 0.95) 100%
+      rgba(0, 0, 0, 0.4) 0%,   /* Green */
+      rgba(0, 0, 0, 0.5) 50%,  /* Purple */
+      rgba(0, 0, 0, 0.3) 100%   /* Cyan */
     ),
     var(--beige);
 }
@@ -127,6 +129,11 @@ body.panel-open {
   color: var(--text);
 }
 
+/* Fix text shadow for dark theme header */
+body.dark-theme .header h1 {
+  text-shadow: 2px 2px 0px #000;
+}
+
 .week-controls {
   display: flex;
   gap: 12px;
@@ -148,6 +155,11 @@ body.panel-open {
   box-shadow: none;
 }
 
+/* Dark theme input adjustment */
+body.dark-theme .week-controls input {
+  color-scheme: dark;
+}
+
 .header-right {
   display: flex;
   gap: 8px;
@@ -165,6 +177,7 @@ body.panel-open {
   box-shadow: var(--shadow);
   cursor: pointer;
   border-radius: 2px;
+  color: var(--text);
 }
 .header-btn:hover {
   transform: translateY(-2px);
@@ -455,6 +468,11 @@ body.panel-open {
 .btn-habits { background: var(--blue); }
 .btn-calendar { background: var(--green); }
 
+/* Overrides for dark theme buttons to remove default colors */
+body.dark-theme .btn-stats { background: var(--pink); } /* Purple */
+body.dark-theme .btn-habits { background: var(--blue); } /* Cyan */
+body.dark-theme .btn-calendar { background: #3a0ca3; } /* Deep Indigo for contrast */
+
 /* PANELS (Common Styles) */
 
 .panel-container {
@@ -490,9 +508,11 @@ body.panel-open {
 /* Override for history to match theme */
 .history .panel-content { background: var(--pink-soft); }
 
-/* Dark mode overrides for panel backgrounds so they aren't neon */
-body.dark-theme .habits .panel-content { background: #1b4332; }
-body.dark-theme .calendar .panel-content { background: #1d3557; }
+/* Dark mode overrides for panel backgrounds */
+body.dark-theme .analytics .panel-content { background: var(--pink-soft); }
+body.dark-theme .habits .panel-content { background: #000000; } /* Deep Dark Purple */
+body.dark-theme .calendar .panel-content { background: #070114; color: #fff; } /* Deep Blue */
+body.dark-theme .history .panel-content { background: var(--pink-soft); }
 
 
 .close-panel {
@@ -554,17 +574,42 @@ canvas {
   padding: 8px;
   border-bottom: 2px dashed var(--text);
 }
+/* Ensure the first column (Name) stretches */
+.habits-table th:first-child, 
+.habits-table td:first-child {
+  width: 100%;
+}
+/* Other columns (Days, Delete) minimal width */
+.habits-table th:not(:first-child),
+.habits-table td:not(:first-child) {
+  white-space: nowrap;
+  width: auto;
+}
+
 .habits-table td {
   padding: 8px;
   vertical-align: middle;
 }
+
+/* Updated Habit Name Input - Full Width Stretch */
 .habit-name-input {
   width: 100%;
   padding: 4px;
-  border: 2px solid var(--text);
+  /* Removed box border to match task lines */
+  border: none;
+  border-bottom: 2px solid var(--text);
   background: var(--beige);
   color: var(--text);
+  box-sizing: border-box; /* Ensures padding doesn't break width */
+  display: block;
 }
+
+/* Add focus state for habit input */
+.habit-name-input:focus {
+  outline: none;
+  background: rgba(255,255,255,0.2);
+}
+
 .habit-checkbox {
   width: 20px;
   height: 20px;
