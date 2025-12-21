@@ -36,17 +36,17 @@ const MOOD_SCORES = { "🙂": 4, "😐": 3, "😡": 2, "😞": 1 };
 // New Constants for Selection Features
 const SLEEP_OPTIONS = ["1ч", "2ч", "3ч", "4ч", "5ч", "6ч", "7ч", "8ч", "9ч", "10ч", "11ч", "12ч+"];
 const HABIT_OPTIONS = [
-  "🏋️ Спорт",
-  "💧 Вода",
-  "🏃 Бег",
-  "📚 Чтение",
-  "🧘 Йога",
-  "🥗 Правильное питание",
-  "📵 Без телефона",
-  "🚭 Не курить",
-  "🧹 Уборка",
-  "🙏 Благодарность",
-  "💻 Работа"
+  "🏋️",
+  "💧",
+  "🏃",
+  "📚",
+  "🧘",
+  "🥗",
+  "📵",
+  "🚭",
+  "🧹",
+  "🙏",
+  "💻"
 ];
 
 // --- HELPER: Get Monday of the Week ---
@@ -118,7 +118,9 @@ if (!state.weeks) {
 if (!state.calendar) state.calendar = {};
 if (!state.theme) state.theme = 'light';
 
-// Default to current week if no start date
+// TWEAK 1: Remove auto-filled date default
+// We strictly rely on user input now.
+/*
 if (!state.weekStart) {
   const today = new Date();
   const y = today.getFullYear();
@@ -126,9 +128,12 @@ if (!state.weekStart) {
   const d = String(today.getDate()).padStart(2, '0');
   state.weekStart = getISOWeekMonday(`${y}-${m}-${d}`);
 } else {
-    // Ensure currently loaded weekStart is also a Monday
-    state.weekStart = getISOWeekMonday(state.weekStart);
-}
+*/
+    // If a weekStart exists in storage, ensure it's normalized, but we won't force it into the input later
+    if (state.weekStart) {
+        state.weekStart = getISOWeekMonday(state.weekStart);
+    }
+/* } */
 
 if (!state.days) state.days = [];
 if (!state.habits) state.habits = [];
@@ -212,6 +217,9 @@ function initWeek() {
 
 function shiftWeek(daysToAdd) {
   // Logic works because adding 7 days to a Monday gives the next Monday
+  // Only shift if a date is actually selected
+  if (!weekStartInput.value) return;
+
   const current = new Date(weekStartInput.value);
   current.setDate(current.getDate() + daysToAdd);
   const y = current.getFullYear();
@@ -641,6 +649,7 @@ function renderHistory() {
         <th>Привычки (Всего)</th>
         <th>Ср. Сон</th>
         <th>Ср. Настроение</th>
+        <th>Удалить</th> <!-- TWEAK 3: Add Delete Column -->
       </tr>
     </thead>
     <tbody></tbody>
@@ -692,6 +701,31 @@ function renderHistory() {
     }
 
     const tr = document.createElement("tr");
+    
+    // TWEAK 3: Add Delete Functionality
+    const tdAction = document.createElement("td");
+    const btnDel = document.createElement("span");
+    btnDel.className = "delete";
+    btnDel.innerText = "✕";
+    btnDel.title = "Удалить неделю из архива";
+    btnDel.onclick = (e) => {
+        e.stopPropagation();
+        if(confirm("Вы уверены, что хотите удалить эту неделю из архива?")) {
+            delete state.weeks[week.weekStart];
+            
+            // If deleting the currently visible week, clear the view
+            if (state.weekStart === week.weekStart) {
+                state.weekStart = null;
+                weekStartInput.value = "";
+                weekEl.innerHTML = "";
+            }
+            
+            save();
+            renderHistory();
+        }
+    };
+    tdAction.appendChild(btnDel);
+
     tr.innerHTML = `
       <td>${week.weekStart}</td>
       <td>${doneTasks} / ${totalTasks}</td>
@@ -699,6 +733,8 @@ function renderHistory() {
       <td>${avgSleep}</td>
       <td>${avgMoodEmoji}</td>
     `;
+    
+    tr.appendChild(tdAction);
     tbody.appendChild(tr);
   });
 
@@ -748,10 +784,15 @@ closeButtons.forEach(btn => {
 
 weekStartInput.onchange = initWeek;
 
+// TWEAK 2: Initially Empty Field
+// We do NOT auto-initialize initWeek() if we want it empty initially.
+// Uncomment below if you want to restore the "Remember last week" functionality.
+/*
 if (state.weekStart) {
   weekStartInput.value = state.weekStart;
   initWeek(); 
 }
+*/
 
 const instructionModal = document.getElementById("instruction-modal");
 const closeInstructionBtn = document.getElementById("close-instruction-btn");
