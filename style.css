@@ -832,6 +832,32 @@ canvas {
   box-shadow: 5px 5px 0 var(--text);
 }
 
+/* Placeholder message styling for empty state */
+#week:empty::before {
+  content: "В окне в левом углу выберите неделю, чтобы просмотреть свои задачи :)";
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 90%;
+  max-width: 600px;
+  margin: 100px auto;
+  padding: 20px;
+  font-family: "Courier New", monospace;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--text);
+  background: var(--pink-soft);
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+  image-rendering: pixelated;
+}
+
+/* Ensure the main container takes up space even when empty to show the message */
+#week:empty {
+  display: block;
+  min-height: 300px;
+}
 .modal-content button:active {
   transform: translateY(0);
   box-shadow: 0 0 0 var(--text);
