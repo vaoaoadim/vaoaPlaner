@@ -26,6 +26,12 @@ const btnThemeToggle = document.getElementById("btnThemeToggle");
 const closeButtons = document.querySelectorAll(".close-panel");
 const bottomControls = document.querySelector(".bottom-controls");
 
+// Calendar Nav Buttons
+const calPrevBtn = document.getElementById("calPrevMonth");
+const calNextBtn = document.getElementById("calNextMonth");
+// Track the currently viewed month in the calendar
+let calendarViewDate = new Date();
+
 // Constants
 const DAYS = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"];
 const SHORT_DAYS = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
@@ -173,6 +179,9 @@ function initWeek() {
   state.weekStart = newMonday;
   weekStartInput.value = newMonday; // Visual snap
   
+  // Update the calendar view to match the selected week
+  calendarViewDate = new Date(newMonday);
+
   if (state.weeks[newMonday]) {
     // Load existing week
     const weekData = state.weeks[newMonday];
@@ -559,15 +568,83 @@ addHabitBtn.onclick = () => {
   renderHabits();
 };
 
+// --- MODAL LOGIC (CUSTOM PIXEL UI) ---
+
+const customModal = document.getElementById('custom-modal');
+const modalTitle = document.getElementById('modal-title');
+const modalBody = document.getElementById('modal-body');
+const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+const modalCancelBtn = document.getElementById('modal-cancel-btn');
+
+function openCustomModal(type, title, textOrValue, callback) {
+    modalTitle.innerText = title;
+    modalBody.innerHTML = "";
+    
+    let inputElement = null;
+
+    if (type === 'confirm') {
+        const p = document.createElement('p');
+        p.innerText = textOrValue;
+        p.style.textAlign = "center";
+        modalBody.appendChild(p);
+    } else if (type === 'prompt') {
+        const p = document.createElement('p');
+        p.innerText = "Введите текст заметки:";
+        modalBody.appendChild(p);
+        
+        inputElement = document.createElement('input');
+        inputElement.type = 'text';
+        inputElement.value = textOrValue || "";
+        inputElement.className = 'modal-input';
+        modalBody.appendChild(inputElement);
+        // Focus with slight delay to ensure render
+        setTimeout(() => inputElement.focus(), 100);
+    }
+
+    customModal.classList.remove('hidden');
+
+    const cleanup = () => {
+        customModal.classList.add('hidden');
+        // Clear handlers to prevent multiple firings
+        modalConfirmBtn.onclick = null;
+        modalCancelBtn.onclick = null;
+    };
+
+    modalConfirmBtn.onclick = () => {
+        if (type === 'prompt') {
+            callback(inputElement.value);
+        } else {
+            callback(true);
+        }
+        cleanup();
+    };
+
+    modalCancelBtn.onclick = () => {
+        if (type === 'confirm') callback(false); 
+        cleanup();
+    };
+}
+
+
 // --- CALENDAR LOGIC ---
 
 const calendarGrid = document.getElementById("calendar-grid");
 const calendarTitle = document.getElementById("calendar-month-title");
 
+// Button Listeners for Calendar Navigation
+calPrevBtn.onclick = () => {
+    calendarViewDate.setMonth(calendarViewDate.getMonth() - 1);
+    renderCalendar();
+};
+
+calNextBtn.onclick = () => {
+    calendarViewDate.setMonth(calendarViewDate.getMonth() + 1);
+    renderCalendar();
+};
+
 function renderCalendar() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
+  const year = calendarViewDate.getFullYear();
+  const month = calendarViewDate.getMonth();
   
   const monthNames = ["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"];
   calendarTitle.innerText = `${monthNames[month]} ${year}`;
@@ -590,11 +667,18 @@ function renderCalendar() {
     calendarGrid.appendChild(empty);
   }
 
+  const todayDate = new Date();
+
   for (let d = 1; d <= daysInMonth; d++) {
     const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const cell = document.createElement("div");
     cell.className = "cal-day";
-    if (d === now.getDate() && month === now.getMonth()) cell.classList.add("today");
+    
+    // Check real today for highlighting
+    if (d === todayDate.getDate() && month === todayDate.getMonth() && year === todayDate.getFullYear()) {
+        cell.classList.add("today");
+    }
+    
     if (state.calendar[dateStr]) cell.classList.add("has-note");
 
     cell.innerHTML = `<strong>${d}</strong>`;
@@ -607,16 +691,18 @@ function renderCalendar() {
     }
 
     cell.onclick = () => {
-      const newNote = prompt(`Заметка на ${d} ${monthNames[month]}:`, state.calendar[dateStr] || "");
-      if (newNote !== null) {
-        if (newNote.trim() === "") {
-          delete state.calendar[dateStr];
-        } else {
-          state.calendar[dateStr] = newNote;
-        }
-        save();
-        renderCalendar();
-      }
+      // Replaced standard prompt with custom Modal
+      openCustomModal('prompt', `Заметка на ${d} ${monthNames[month]}`, state.calendar[dateStr] || "", (newNote) => {
+          if (newNote !== null) {
+            if (newNote.trim() === "") {
+                delete state.calendar[dateStr];
+            } else {
+                state.calendar[dateStr] = newNote;
+            }
+            save();
+            renderCalendar();
+          }
+      });
     };
 
     calendarGrid.appendChild(cell);
@@ -646,10 +732,10 @@ function renderHistory() {
       <tr>
         <th>Неделя</th>
         <th>Задачи (Вып/Всего)</th>
-        <th>Привычки (Всего)</th>
+        <!-- REMOVED HABITS COLUMN AS REQUESTED -->
         <th>Ср. Сон</th>
         <th>Ср. Настроение</th>
-        <th>Удалить</th> <!-- TWEAK 3: Add Delete Column -->
+        <th>Удалить</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -682,12 +768,7 @@ function renderHistory() {
       }
     });
 
-    let doneHabits = 0;
-    if (week.habits) {
-        week.habits.forEach(h => {
-            if(h.checks) doneHabits += h.checks.filter(c => c).length;
-        });
-    }
+    // Habits calculation removed from view logic
 
     const avgSleep = sleepCount ? (totalSleep / sleepCount).toFixed(1) + "ч" : "-";
     const avgMoodScore = moodCount ? (totalMood / moodCount) : 0;
@@ -702,7 +783,7 @@ function renderHistory() {
 
     const tr = document.createElement("tr");
     
-    // TWEAK 3: Add Delete Functionality
+    // TWEAK 3: Add Delete Functionality with CUSTOM MODAL
     const tdAction = document.createElement("td");
     const btnDel = document.createElement("span");
     btnDel.className = "delete";
@@ -710,26 +791,28 @@ function renderHistory() {
     btnDel.title = "Удалить неделю из архива";
     btnDel.onclick = (e) => {
         e.stopPropagation();
-        if(confirm("Вы уверены, что хотите удалить эту неделю из архива?")) {
-            delete state.weeks[week.weekStart];
-            
-            // If deleting the currently visible week, clear the view
-            if (state.weekStart === week.weekStart) {
-                state.weekStart = null;
-                weekStartInput.value = "";
-                weekEl.innerHTML = "";
+        
+        openCustomModal('confirm', 'Удалить неделю', "Вы уверены, что хотите удалить эту неделю из архива?", (confirmed) => {
+            if(confirmed) {
+                delete state.weeks[week.weekStart];
+                
+                // If deleting the currently visible week, clear the view
+                if (state.weekStart === week.weekStart) {
+                    state.weekStart = null;
+                    weekStartInput.value = "";
+                    weekEl.innerHTML = "";
+                }
+                
+                save();
+                renderHistory();
             }
-            
-            save();
-            renderHistory();
-        }
+        });
     };
     tdAction.appendChild(btnDel);
 
     tr.innerHTML = `
       <td>${week.weekStart}</td>
       <td>${doneTasks} / ${totalTasks}</td>
-      <td>${doneHabits}</td>
       <td>${avgSleep}</td>
       <td>${avgMoodEmoji}</td>
     `;
@@ -761,7 +844,16 @@ function openPanel(panel) {
 
 btnStats.onclick = () => openPanel(analyticsContainer);
 btnHabits.onclick = () => openPanel(habitsContainer);
-btnCalendar.onclick = () => openPanel(calendarContainer);
+btnCalendar.onclick = () => {
+    // When opening calendar, sync view with current week date or today
+    if(state.weekStart) {
+        calendarViewDate = new Date(state.weekStart);
+    } else {
+        calendarViewDate = new Date();
+    }
+    renderCalendar();
+    openPanel(calendarContainer);
+};
 
 btnWeeklyAnalytics.onclick = () => {
   renderHistory();
@@ -805,318 +897,3 @@ closeInstructionBtn.onclick = () => {
   instructionModal.classList.add("hidden");
   localStorage.setItem("planer_instructions_seen", "true");
 };
-
-// --- AI AGENT CHAT LOGIC ---
-
-const aiAgentBtn = document.getElementById("ai-agent-btn");
-const aiChatContainer = document.getElementById("ai-chat-container");
-const closeAiChat = document.getElementById("close-ai-chat");
-const aiChatMessages = document.getElementById("ai-chat-messages");
-const aiChatInput = document.getElementById("ai-chat-input");
-const aiChatSend = document.getElementById("ai-chat-send");
-
-// Приветственное сообщение
-const AI_GREETING = "Добрый день! Я ваш личный AI ассистент, расскажите мне о ваших целях, и я подберу полезные привычки и разработаю персональный план для быстрого достижения вашей цели!";
-
-// Initialize chat with greeting
-function initAiChat() {
-  aiChatMessages.innerHTML = "";
-  addMessage("assistant", AI_GREETING);
-}
-
-// Add message to chat
-function addMessage(role, text) {
-  const messageEl = document.createElement("div");
-  messageEl.className = `ai-chat-message ${role}`;
-  messageEl.textContent = text;
-  aiChatMessages.appendChild(messageEl);
-  aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-}
-
-// Send message to AI
-async function sendMessageToAI(userMessage) {
-  addMessage("user", userMessage);
-  aiChatInput.value = "";
-  aiChatSend.disabled = true;
-  
-  // Show loading indicator
-  const loadingEl = document.createElement("div");
-  loadingEl.className = "ai-chat-message assistant";
-  loadingEl.textContent = "Думаю...";
-  aiChatMessages.appendChild(loadingEl);
-  aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
-  
-  try {
-    // ============================================
-    // AI API INTEGRATION POINT
-    // ============================================
-    // Replace this function call with your AI API integration
-    // See AI_API_SETUP.md for instructions on how to connect a free AI provider
-    
-    const aiResponse = await callAIAPI(userMessage);
-    
-    // Remove loading indicator
-    loadingEl.remove();
-    
-    // Add AI response
-    addMessage("assistant", aiResponse);
-  } catch (error) {
-    // Remove loading indicator
-    loadingEl.remove();
-    
-    // Show error message with details
-    let errorMessage = "Извините, произошла ошибка при обращении к AI.";
-    if (error.message) {
-      errorMessage = error.message;
-    } else if (error.toString) {
-      errorMessage = error.toString();
-    }
-    addMessage("assistant", errorMessage);
-    console.error("AI API Error:", error);
-  } finally {
-    aiChatSend.disabled = false;
-    aiChatInput.focus();
-  }
-}
-
-// ============================================
-// AI API FUNCTION - Hugging Face Integration
-// ============================================
-// ВАРИАНТ 1: Использование локального прокси-сервера (РЕКОМЕНДУЕТСЯ)
-// Запустите server-proxy.js: node server-proxy.js
-// Затем используйте USE_PROXY = true
-
-// ВАРИАНТ 2: Прямой запрос (будет работать только если CORS разрешен)
-// Используйте USE_PROXY = false (может не работать из-за CORS)
-
-const USE_PROXY = true; // Измените на false для прямого запроса
-const PROXY_URL = 'http://localhost:3000/api/ai'; // URL вашего прокси-сервера
-const API_KEY = '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'; // Используется только если USE_PROXY = false
-const API_URL = 'https://router.huggingface.co/hf-inference/models/gpt2'; // Правильный формат router API
-
-async function callAIAPI(userMessage) {
-  // Если используем прокси, отправляем запрос через него
-  if (USE_PROXY) {
-    try {
-      const response = await fetch(PROXY_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          model: 'gpt2', // Используем gpt2 - простая и надежная модель
-          message: userMessage
-        })
-      });
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Ошибка прокси: ${response.status} - ${errorText}`);
-      }
-      
-      const data = await response.json();
-      
-      // Обработка ответа (поддерживает как Groq, так и Hugging Face формат)
-      let generatedText = null;
-      
-      // Формат Groq API (OpenAI-совместимый)
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        generatedText = data.choices[0].message.content;
-      }
-      // Формат Hugging Face
-      else if (data.generated_text) {
-        generatedText = data.generated_text;
-      } else if (data[0]?.generated_text) {
-        generatedText = data[0].generated_text;
-      } else if (typeof data === 'string') {
-        generatedText = data;
-      }
-      
-      if (!generatedText || generatedText.trim().length === 0) {
-        return "Извините, не удалось получить ответ от AI. Попробуйте переформулировать вопрос.";
-      }
-      
-      return generatedText.trim();
-    } catch (error) {
-      console.error('Proxy Error:', error);
-      if (error.message.includes('Failed to fetch') || error.message.includes('ECONNREFUSED')) {
-        throw new Error('Прокси-сервер не запущен. Запустите: node server-proxy.js');
-      }
-      throw error;
-    }
-  }
-  
-  // Прямой запрос к Hugging Face API (может не работать из-за CORS)
-  
-  try {
-    // Формируем запрос в формате, который ожидает DialoGPT
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        inputs: {
-          past_user_inputs: [],
-          generated_responses: [],
-          text: `Ты полезный ассистент для приложения планировщика. Помогай пользователям ставить цели и создавать привычки. Отвечай на русском языке. ${userMessage}`
-        },
-        parameters: {
-          max_length: 500,
-          temperature: 0.7,
-          return_full_text: false
-        }
-      })
-    });
-    
-    // Проверяем статус ответа
-    if (!response.ok) {
-      // Если модель загружается (503), ждем и повторяем запрос
-      if (response.status === 503) {
-        const errorData = await response.json().catch(() => ({}));
-        const estimatedTime = errorData.estimated_time || 20;
-        
-        // Показываем пользователю, что модель загружается
-        await new Promise(resolve => setTimeout(resolve, estimatedTime * 1000));
-        
-        // Повторная попытка
-        const retryResponse = await fetch(API_URL, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${API_KEY}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            inputs: {
-              past_user_inputs: [],
-              generated_responses: [],
-              text: `Ты полезный ассистент для приложения планировщика. Помогай пользователям ставить цели и создавать привычки. Отвечай на русском языке. ${userMessage}`
-            },
-            parameters: {
-              max_length: 500,
-              temperature: 0.7,
-              return_full_text: false
-            }
-          })
-        });
-        
-        if (!retryResponse.ok) {
-          const retryErrorData = await retryResponse.json().catch(() => ({}));
-          throw new Error(`Модель загружается. Ошибка: ${retryErrorData.error || retryResponse.statusText}. Попробуйте через ${estimatedTime} секунд.`);
-        }
-        
-        const retryData = await retryResponse.json();
-        if (retryData.error) {
-          throw new Error(`Ошибка API: ${retryData.error}`);
-        }
-        
-        // Обработка ответа от DialoGPT
-        const generatedText = retryData.generated_text || retryData[0]?.generated_text;
-        if (generatedText) {
-          return generatedText.trim();
-        }
-        throw new Error('Не удалось получить ответ от модели.');
-      }
-      
-      // Для других ошибок получаем детали
-      let errorMessage = `Ошибка ${response.status}: ${response.statusText}`;
-      try {
-        const errorData = await response.json();
-        if (errorData.error) {
-          errorMessage = `Ошибка API: ${errorData.error}`;
-        }
-      } catch (e) {
-        // Если не удалось распарсить JSON, используем стандартное сообщение
-      }
-      
-      throw new Error(errorMessage);
-    }
-    
-    const data = await response.json();
-    
-    // Обработка различных форматов ответа
-    if (data.error) {
-      throw new Error(`Ошибка API: ${data.error}`);
-    }
-    
-    // Извлекаем сгенерированный текст (разные модели возвращают разные форматы)
-    let generatedText = null;
-    
-    if (data.generated_text) {
-      generatedText = data.generated_text;
-    } else if (data[0]?.generated_text) {
-      generatedText = data[0].generated_text;
-    } else if (typeof data === 'string') {
-      generatedText = data;
-    } else if (Array.isArray(data) && data.length > 0) {
-      generatedText = data[0].generated_text || data[0].text || JSON.stringify(data[0]);
-    }
-    
-    if (!generatedText || generatedText.trim().length === 0) {
-      console.warn('Неожиданный формат ответа:', data);
-      return "Извините, не удалось получить ответ от AI. Попробуйте переформулировать вопрос или проверьте консоль браузера (F12) для деталей.";
-    }
-    
-    return generatedText.trim();
-  } catch (error) {
-    console.error('AI API Error Details:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name
-    });
-    
-    // Более понятные сообщения об ошибках для пользователя
-    if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
-      throw new Error('Ошибка CORS: Hugging Face API блокирует запросы из браузера. Рекомендуется использовать серверный прокси или CORS-прокси. Проверьте консоль браузера (F12) для деталей.');
-    }
-    
-    if (error.message.includes('401') || error.message.includes('Unauthorized')) {
-      throw new Error('Ошибка авторизации: проверьте правильность API ключа.');
-    }
-    
-    if (error.message.includes('429')) {
-      throw new Error('Превышен лимит запросов. Подождите немного и попробуйте снова.');
-    }
-    
-    // Передаем оригинальное сообщение об ошибке
-    throw error;
-  }
-}
-
-// Toggle chat window
-aiAgentBtn.onclick = () => {
-  if (aiChatContainer.classList.contains("hidden")) {
-    aiChatContainer.classList.remove("hidden");
-    initAiChat();
-    aiChatInput.focus();
-  } else {
-    aiChatContainer.classList.add("hidden");
-  }
-};
-
-closeAiChat.onclick = () => {
-  aiChatContainer.classList.add("hidden");
-};
-
-// Send message on button click
-aiChatSend.onclick = () => {
-  const message = aiChatInput.value.trim();
-  if (message) {
-    sendMessageToAI(message);
-  }
-};
-
-// Send message on Enter key
-aiChatInput.onkeypress = (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    const message = aiChatInput.value.trim();
-    if (message) {
-      sendMessageToAI(message);
-    }
-  }
-};
-
-// Initialize chat on first open
-initAiChat();
