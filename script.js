@@ -26,9 +26,6 @@ const btnThemeToggle = document.getElementById("btnThemeToggle");
 const closeButtons = document.querySelectorAll(".close-panel");
 const bottomControls = document.querySelector(".bottom-controls");
 
-// Calendar Nav Buttons
-const calPrevBtn = document.getElementById("calPrevMonth");
-const calNextBtn = document.getElementById("calNextMonth");
 // Track the currently viewed month in the calendar
 let calendarViewDate = new Date();
 
@@ -631,16 +628,7 @@ function openCustomModal(type, title, textOrValue, callback) {
 const calendarGrid = document.getElementById("calendar-grid");
 const calendarTitle = document.getElementById("calendar-month-title");
 
-// Button Listeners for Calendar Navigation
-calPrevBtn.onclick = () => {
-    calendarViewDate.setMonth(calendarViewDate.getMonth() - 1);
-    renderCalendar();
-};
-
-calNextBtn.onclick = () => {
-    calendarViewDate.setMonth(calendarViewDate.getMonth() + 1);
-    renderCalendar();
-};
+// Button Listeners removed as per request
 
 function renderCalendar() {
   const year = calendarViewDate.getFullYear();
@@ -734,7 +722,7 @@ function renderHistory() {
         <th>Задачи (Вып/Всего)</th>
         <!-- REMOVED HABITS COLUMN AS REQUESTED -->
         <th>Ср. Сон</th>
-        <th>Ср. Настроение</th>
+        <!-- MOOD REMOVED -->
         <th>Удалить</th>
       </tr>
     </thead>
@@ -749,6 +737,7 @@ function renderHistory() {
     let doneTasks = 0;
     let totalSleep = 0;
     let sleepCount = 0;
+    // Mood calculation kept for data integrity/potential future use but not displayed
     let totalMood = 0;
     let moodCount = 0;
 
@@ -768,11 +757,10 @@ function renderHistory() {
       }
     });
 
-    // Habits calculation removed from view logic
-
     const avgSleep = sleepCount ? (totalSleep / sleepCount).toFixed(1) + "ч" : "-";
-    const avgMoodScore = moodCount ? (totalMood / moodCount) : 0;
     
+    // Mood Emoji calculation logic remains but variable not used in display
+    const avgMoodScore = moodCount ? (totalMood / moodCount) : 0;
     let avgMoodEmoji = "-";
     if (avgMoodScore > 0) {
       if (avgMoodScore >= 3.5) avgMoodEmoji = "🙂";
@@ -814,7 +802,6 @@ function renderHistory() {
       <td>${week.weekStart}</td>
       <td>${doneTasks} / ${totalTasks}</td>
       <td>${avgSleep}</td>
-      <td>${avgMoodEmoji}</td>
     `;
     
     tr.appendChild(tdAction);
