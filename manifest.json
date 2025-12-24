@@ -3,7 +3,7 @@
   "short_name": "Pläner",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#fbe1ec",
+  "background_color": "#ffc8c8",
   "theme_color": "#ffc8c8",
   "icons": [
     {
