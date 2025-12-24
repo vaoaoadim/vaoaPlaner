@@ -14,9 +14,6 @@
   --inset-shadow: inset 2px 2px 0px rgba(0,0,0,0.2);
   --inset-light: inset -2px -2px 0px rgba(255,255,255,0.8);
   
-  /* NEW: Dedicated header background variable to strictly enforce theme colors */
-  --header-bg: #ffc8c8;
-
   /* LAYOUT CONSTANTS to prevent overlaps */
   --header-height: 100px;
   --footer-height: 320px; /* Increased footer height for larger panels */
@@ -34,9 +31,6 @@ body.dark-theme {
   --border: #ffffff;      /* White border */
   --shadow: 3px 3px 0px #000;
   --inset-shadow: inset 2px 2px 0px rgba(0,0,0,0.5);
-
-  /* NEW: Dedicated header background for dark mode */
-  --header-bg: #3f243a;
 }
 
 * {
@@ -111,8 +105,7 @@ body.panel-open {
   height: var(--header-height);
   
   padding: 12px;
-  /* Changed to use the dedicated variable */
-  background: var(--header-bg);
+  background: var(--pink-soft);
   box-shadow: none; 
   border-bottom: 3px solid var(--border); 
   z-index: 1000;
@@ -123,8 +116,10 @@ body.panel-open {
   align-items: flex-start;
 }
 
-/* REMOVED: Specific override block for dark theme header is no longer needed 
-   as --header-bg handles the switch automatically. */
+/* Override header background for dark theme to be Purple instead of Dark Indigo */
+body.dark-theme .header {
+  background: var(--pink);
+}
 
 .header-left {
   display: flex;
