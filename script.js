@@ -441,7 +441,7 @@ function renderStats(total, done, dailyData) {
   ctxPie.beginPath();
   ctxPie.moveTo(centerX, centerY);
   ctxPie.arc(centerX, centerY, radius, angle, Math.PI * 2);
-  ctxPie.fillStyle = "#959595ff";
+  ctxPie.fillStyle = "#f6efe8";
   ctxPie.fill();
 
   summaryEl.innerHTML = `
