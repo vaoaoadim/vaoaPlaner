@@ -4,7 +4,7 @@
   "start_url": ".",
   "display": "standalone",
   "background_color": "#fbe1ec",
-  "theme_color": "#f5a3c7",
+  "theme_color": "#ffc8c8",
   "icons": [
     {
       "src": "planer.png",
