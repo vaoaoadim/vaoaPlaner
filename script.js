@@ -418,7 +418,7 @@ function renderStats(total, done, dailyData) {
   ctxBar.clearRect(0, 0, barCanvas.width, barCanvas.height);
   const w = barCanvas.width / dailyData.length;
   dailyData.forEach((v, i) => {
-    ctxBar.fillStyle = "#8ad38fff"; 
+    ctxBar.fillStyle = "#8fff97ff"; 
     ctxBar.fillRect(i * w + 10, 200 - v * 1.8, w - 20, v * 1.8);
   });
 
@@ -435,7 +435,7 @@ function renderStats(total, done, dailyData) {
   ctxPie.beginPath();
   ctxPie.moveTo(centerX, centerY);
   ctxPie.arc(centerX, centerY, radius, 0, angle);
-  ctxPie.fillStyle = "#8ad38fff"; 
+  ctxPie.fillStyle = "#ff8fb0"; 
   ctxPie.fill();
 
   ctxPie.beginPath();
@@ -849,10 +849,18 @@ btnWeeklyAnalytics.onclick = () => {
 
 btnThemeToggle.onclick = () => {
   state.theme = state.theme === 'light' ? 'dark' : 'light';
+  
+  // Добавляем поиск нашего мета-тега:
+  const metaTheme = document.getElementById("theme-meta");
+
   if (state.theme === 'dark') {
     body.classList.add('dark-theme');
+    // Устанавливаем цвет для темной темы:
+    if(metaTheme) metaTheme.setAttribute("content", "#3f243a");
   } else {
     body.classList.remove('dark-theme');
+    // Устанавливаем цвет для светлой темы:
+    if(metaTheme) metaTheme.setAttribute("content", "#ffc8c8");
   }
   save();
 };
