@@ -3,9 +3,9 @@
 :root {
   /* Using the original colors but defining them as solid, hard colors */
   --beige: #f6efe8; /* Background light */
-  --pink: #fe9898; /* Primary action/highlight */
+  --pink: #ff7c7c; /* Primary action/highlight */
   --pink-soft: #ffc8c8; /* Secondary highlight */
-  --blue: #ff8484; /* Accent color */
+  --blue: #ffb6b6; /* Accent color */
   --blue-strong: #ffdddd;
   --green: #ff8484; /* New green for habits */
   --text: #000000; /* Dark text */
@@ -498,7 +498,7 @@ body.dark-theme .week-controls input {
 
 /* Variant colors for new buttons */
 .btn-stats { background: var(--pink); }
-.btn-habits { background: var(--blue); }
+.btn-habits { background: #ff7c7c; }
 .btn-calendar { background: var(--green); }
 
 /* Overrides for dark theme buttons to remove default colors */
@@ -909,3 +909,27 @@ body.dark-theme #modal-body input {
 }
 
 .hidden { display: none !important; }
+/* Находим кнопку по ID, который ей присваивает скрипт */
+#add-habit-btn {
+  background-color: var(--pink) !important; /* Делаем её темнее, чем фон панели (фон панели --pink-soft) */
+  color: #fff; /* Белый текст для контраста */
+  border: 3px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: transform 0.1s, box-shadow 0.1s; /* Плавность нажатия */
+  margin: 15px auto;
+  display: block;
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+/* Эффект нажатия (анимация) */
+#add-habit-btn:active {
+  transform: translate(2px, 2px); /* Сдвиг вниз и вправо */
+  box-shadow: 0 0 0 var(--text);   /* Исчезновение тени */
+}
+
+/* Дополнительно для темной темы, чтобы текст был читаемым */
+body.dark-theme #add-habit-btn {
+  color: #fff;
+  background-color: var(--pink) !important; 
+}
