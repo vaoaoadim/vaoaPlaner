@@ -418,7 +418,7 @@ function renderStats(total, done, dailyData) {
   ctxBar.clearRect(0, 0, barCanvas.width, barCanvas.height);
   const w = barCanvas.width / dailyData.length;
   dailyData.forEach((v, i) => {
-    ctxBar.fillStyle = "#ff8fb0"; 
+    ctxBar.fillStyle = "#8ad38fff"; 
     ctxBar.fillRect(i * w + 10, 200 - v * 1.8, w - 20, v * 1.8);
   });
 
@@ -435,13 +435,13 @@ function renderStats(total, done, dailyData) {
   ctxPie.beginPath();
   ctxPie.moveTo(centerX, centerY);
   ctxPie.arc(centerX, centerY, radius, 0, angle);
-  ctxPie.fillStyle = "#ff8fb0"; 
+  ctxPie.fillStyle = "#8ad38fff"; 
   ctxPie.fill();
 
   ctxPie.beginPath();
   ctxPie.moveTo(centerX, centerY);
   ctxPie.arc(centerX, centerY, radius, angle, Math.PI * 2);
-  ctxPie.fillStyle = "#f6efe8";
+  ctxPie.fillStyle = "#959595ff";
   ctxPie.fill();
 
   summaryEl.innerHTML = `
