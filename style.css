@@ -706,14 +706,27 @@ canvas {
 .cal-day.today {
   background: var(--pink);
 }
+
+/* Класс для подсветки дня с заметкой */
+.cal-day.has-note {
+  background-color: #ff0000 !important; /* Ваш красный/розовый цвет (--pink) */
+  color: #ffffff !important; /* Делаем текст числа белым для контраста */
+}
+
+/* Чтобы при наведении цвет не пропадал */
+.cal-day.has-note:hover {
+  background-color: #ff0000 !important;
+}
 .cal-day.has-note::after {
   content: "★";
   position: absolute;
   top: 2px;
   right: 2px;
-  color: var(--blue-strong);
+  /* Устанавливаем белый цвет */
+  color: #ffffff !important;
   font-size: 10px;
 }
+
 .cal-note {
   display: block;
   font-size: 9px;
@@ -721,7 +734,8 @@ canvas {
   text-overflow: ellipsis;
   white-space: nowrap;
   margin-top: 2px;
-  color: var(--blue-strong);
+  /* Устанавливаем белый цвет для обеих тем */
+  color: #ffffff !important; 
 }
 
 /* HISTORY TABLE SPECIFIC */
@@ -897,14 +911,14 @@ body.dark-theme .modal-content {
   border: 3px solid var(--border);
   background: var(--beige);
   font-family: "Courier New", monospace;
-  color: var(--text);
+  color: #000000; /* FORCE BLACK TEXT IN LIGHT THEME */
   font-size: 16px;
 }
 
 /* Dark theme specific input style for modal */
 body.dark-theme #modal-body input {
   background: var(--beige);
-  color: var(--text);
+  color: #ffffff; /* FORCE WHITE TEXT IN DARK THEME */
   border-color: var(--text);
 }
 
