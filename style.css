@@ -729,7 +729,8 @@ canvas {
 
 .cal-note {
   display: block;
-  font-size: 9px;
+  font-size: 18px; /* Increased font size for stickers */
+  text-align: center;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -913,6 +914,38 @@ body.dark-theme .modal-content {
   font-family: "Courier New", monospace;
   color: #000000; /* FORCE BLACK TEXT IN LIGHT THEME */
   font-size: 16px;
+}
+
+/* Sticker Grid Styles */
+.sticker-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sticker-btn {
+  font-size: 24px;
+  background: var(--beige);
+  border: 2px solid var(--border);
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: none;
+  box-shadow: 2px 2px 0 var(--text);
+}
+
+.sticker-btn:hover {
+  background: var(--pink);
+  transform: translateY(-1px);
+}
+
+.sticker-btn:active, .sticker-btn.selected {
+  background: var(--pink);
+  transform: translateY(1px);
+  box-shadow: inset 2px 2px 0 rgba(0,0,0,0.2);
 }
 
 /* Dark theme specific input style for modal */
