@@ -52,6 +52,14 @@ const HABIT_OPTIONS = [
   "💻"
 ];
 
+// CALENDAR STICKERS CONSTANT (Added for the modification)
+const CALENDAR_STICKERS = [
+  "✈️", "🚗", "🚂", "🏠", "💼",
+  "💊", "🏋️", "🎉", "🎂", "❤️",
+  "⭐", "💰", "🛒", "📚", "🎮",
+  "🏖️", "🎬", "🎤", "🐾", "🍔"
+];
+
 // --- HELPER: Get Monday of the Week ---
 // Ensures any date selected maps to the same Monday "Key"
 function getISOWeekMonday(dateStr) {
@@ -596,6 +604,37 @@ function openCustomModal(type, title, textOrValue, callback) {
         modalBody.appendChild(inputElement);
         // Focus with slight delay to ensure render
         setTimeout(() => inputElement.focus(), 100);
+    } else if (type === 'sticker') { // ADDED: Sticker logic
+        const p = document.createElement('p');
+        p.innerText = "Выберите стикер:";
+        p.style.textAlign = "center";
+        modalBody.appendChild(p);
+        
+        const grid = document.createElement('div');
+        grid.className = 'sticker-grid';
+        
+        // Function to create sticker buttons
+        CALENDAR_STICKERS.forEach(sticker => {
+            const btn = document.createElement('button');
+            btn.className = 'sticker-btn';
+            btn.innerText = sticker;
+            btn.onclick = () => {
+                callback(sticker);
+                cleanup();
+            };
+            grid.appendChild(btn);
+        });
+        modalBody.appendChild(grid);
+
+        // Add explicit delete button for better UX
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerText = "Удалить стикер";
+        deleteBtn.style.marginTop = "10px";
+        deleteBtn.onclick = () => {
+            callback(""); // Clear
+            cleanup();
+        };
+        modalBody.appendChild(deleteBtn);
     }
 
     customModal.classList.remove('hidden');
@@ -610,6 +649,8 @@ function openCustomModal(type, title, textOrValue, callback) {
     modalConfirmBtn.onclick = () => {
         if (type === 'prompt') {
             callback(inputElement.value);
+        } else if (type === 'sticker') {
+             // For sticker, we handle selection on button click, so OK just closes
         } else {
             callback(true);
         }
@@ -679,8 +720,8 @@ function renderCalendar() {
     }
 
     cell.onclick = () => {
-      // Replaced standard prompt with custom Modal
-      openCustomModal('prompt', `Заметка на ${d} ${monthNames[month]}`, state.calendar[dateStr] || "", (newNote) => {
+      // CHANGED: Use 'sticker' type instead of 'prompt'
+      openCustomModal('sticker', `Метка на ${d} ${monthNames[month]}`, state.calendar[dateStr] || "", (newNote) => {
           if (newNote !== null) {
             if (newNote.trim() === "") {
                 delete state.calendar[dateStr];
