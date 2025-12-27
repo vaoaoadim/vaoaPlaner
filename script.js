@@ -54,10 +54,10 @@ const HABIT_OPTIONS = [
 
 // CALENDAR STICKERS CONSTANT (Added for the modification)
 const CALENDAR_STICKERS = [
-  "✈️", "🚗", "🚂", "🏠", "💼",
+  "✈️", "🚗", "🚂", "🎫", "📋",
   "💊", "🏋️", "🎉", "🎂", "❤️",
-  "⭐", "💰", "🛒", "📚", "🎮",
-  "🏖️", "🎬", "🎤", "🐾", "🍔"
+  "🤝", "💰", "🛒", "📚", "🐱",
+  "🏖️", "👨‍👩‍👦‍👦", "🔨", "📞", "⏰"
 ];
 
 // --- HELPER: Get Monday of the Week ---
@@ -606,7 +606,7 @@ function openCustomModal(type, title, textOrValue, callback) {
         setTimeout(() => inputElement.focus(), 100);
     } else if (type === 'sticker') { // ADDED: Sticker logic
         const p = document.createElement('p');
-        p.innerText = "Выберите стикер:";
+        p.innerText = "Выберите метку:";
         p.style.textAlign = "center";
         modalBody.appendChild(p);
         
@@ -628,7 +628,7 @@ function openCustomModal(type, title, textOrValue, callback) {
 
         // Add explicit delete button for better UX
         const deleteBtn = document.createElement('button');
-        deleteBtn.innerText = "Удалить стикер";
+        deleteBtn.innerText = "Удалить метку";
         deleteBtn.style.marginTop = "10px";
         deleteBtn.onclick = () => {
             callback(""); // Clear
@@ -797,6 +797,12 @@ function renderHistory() {
         moodCount++;
       }
     });
+    
+    const percent = totalTasks
+  ? Math.round((doneTasks / totalTasks) * 100)
+  : 0;
+
+    
 
     const avgSleep = sleepCount ? (totalSleep / sleepCount).toFixed(1) + "ч" : "-";
     
@@ -840,10 +846,15 @@ function renderHistory() {
     tdAction.appendChild(btnDel);
 
     tr.innerHTML = `
-      <td>${week.weekStart}</td>
-      <td>${doneTasks} / ${totalTasks}</td>
-      <td>${avgSleep}</td>
-    `;
+  <td>${week.weekStart}</td>
+  <td>
+    ${doneTasks} / ${totalTasks}
+    <br>
+    <strong>${percent}%</strong>
+  </td>
+  <td>${avgSleep}</td>
+`;
+
     
     tr.appendChild(tdAction);
     tbody.appendChild(tr);
@@ -933,3 +944,44 @@ closeInstructionBtn.onclick = () => {
   instructionModal.classList.add("hidden");
   localStorage.setItem("planer_instructions_seen", "true");
 };
+
+const QUOTES = [
+  "Маленький шаг сегодня — большой результат завтра",
+  "Не идеально — тоже считается",
+  "Ты делаешь больше, чем думаешь",
+  "Даже 10 минут — это уже прогресс",
+  "Работай мягко, но регулярно",
+  "Сегодня достаточно просто начать",
+  "Пусть будет медленно, но честно",
+  "Ты не отстаёшь, ты в своём ритме",
+  "Сделано — лучше, чем идеально",
+  "Каждый день — плюс один пиксель"
+];
+
+const QUOTE_INTERVAL = 24 * 60 * 60 * 1000; // 24 часа
+const quoteEl = document.getElementById("headerQuote");
+
+function setHeaderQuote() {
+  const now = Date.now();
+  const saved = JSON.parse(localStorage.getItem("planner_quote") || "{}");
+
+  if (!saved.text || now - saved.time > QUOTE_INTERVAL) {
+    const text = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+    localStorage.setItem(
+      "planner_quote",
+      JSON.stringify({ text, time: now })
+    );
+    renderQuote(text);
+  } else {
+    renderQuote(saved.text);
+  }
+}
+
+function renderQuote(text) {
+  quoteEl.innerHTML = `
+    <span class="label">Цитата дня:</span>
+    <span class="text">“${text}”</span>
+  `;
+}
+
+setHeaderQuote();
