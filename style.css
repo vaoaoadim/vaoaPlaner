@@ -45,13 +45,7 @@ body {
   margin: 0;
   /* Updated Background: Subtle gradient (Green, Pink, Blue) with pixel grid overlay */
   background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(0,0,0,0.08),
-      rgba(0,0,0,0.08) 1px,
-      transparent 1px,
-      transparent 2px
-    ),
+    
     linear-gradient(
       120deg, 
       rgba(168, 230, 207, 0.4) 0%, 
@@ -602,6 +596,24 @@ canvas {
   margin: 0 auto;
   border-collapse: collapse;
 }
+/* Общие стили для кнопки добавления привычки */
+#add-habit-btn {
+    transition: all 0.3s ease; /* Плавность анимации */
+    cursor: pointer;
+}
+
+/* Эффект при наведении */
+#add-habit-btn:hover {
+    transform: translateY(-2px); /* Подпрыгивание вверх */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Тень */
+    filter: brightness(1.1);
+}
+
+/* Эффект при нажатии */
+#add-habit-btn:active {
+    transform: translateY(0); /* Возврат на место */
+    filter: brightness(0.9);
+}
 .habits-table th {
   text-align: left;
   padding: 8px;
@@ -979,4 +991,48 @@ body.dark-theme #modal-body input {
 body.dark-theme #add-habit-btn {
   color: #fff;
   background-color: var(--pink) !important; 
+}
+
+.header {
+  position: fixed; /* уже есть, но важно */
+}
+
+.header-quote {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  text-align: center;
+  font-family: "Courier New", monospace;
+  font-size: 13px;
+  max-width: 420px;
+  padding: 4px 8px;
+
+  color: var(--text);
+  opacity: 0.85;
+  line-height: 1.4;
+
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* кавычки */
+.header-quote::before,
+.header-quote::after {
+  content: none;
+}
+
+.header-quote .label {
+  opacity: 0.6;
+  margin-right: 6px;
+}
+
+.header-quote .text {
+  font-weight: 500;
+}
+
+/* dark theme */
+body.dark-theme .header-quote {
+  opacity: 0.9;
 }
