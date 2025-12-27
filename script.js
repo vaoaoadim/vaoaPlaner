@@ -945,43 +945,5 @@ closeInstructionBtn.onclick = () => {
   localStorage.setItem("planer_instructions_seen", "true");
 };
 
-const QUOTES = [
-  "Маленький шаг сегодня — большой результат завтра",
-  "Не идеально — тоже считается",
-  "Ты делаешь больше, чем думаешь",
-  "Даже 10 минут — это уже прогресс",
-  "Работай мягко, но регулярно",
-  "Сегодня достаточно просто начать",
-  "Пусть будет медленно, но честно",
-  "Ты не отстаёшь, ты в своём ритме",
-  "Сделано — лучше, чем идеально",
-  "Каждый день — плюс один пиксель"
-];
 
-const QUOTE_INTERVAL = 24 * 60 * 60 * 1000; // 24 часа
-const quoteEl = document.getElementById("headerQuote");
 
-function setHeaderQuote() {
-  const now = Date.now();
-  const saved = JSON.parse(localStorage.getItem("planner_quote") || "{}");
-
-  if (!saved.text || now - saved.time > QUOTE_INTERVAL) {
-    const text = QUOTES[Math.floor(Math.random() * QUOTES.length)];
-    localStorage.setItem(
-      "planner_quote",
-      JSON.stringify({ text, time: now })
-    );
-    renderQuote(text);
-  } else {
-    renderQuote(saved.text);
-  }
-}
-
-function renderQuote(text) {
-  quoteEl.innerHTML = `
-    <span class="label">Цитата дня:</span>
-    <span class="text">“${text}”</span>
-  `;
-}
-
-setHeaderQuote();
